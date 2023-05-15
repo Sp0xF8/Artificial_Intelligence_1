@@ -96,7 +96,7 @@ class GreedyRuleInductionModel(LearnedRuleModel):
                                 Improved = True
             # if the algorithm has improved the rule set
 
-            print(f"best new rule: {best_new_rule}")
+            print(f"best new rule: {best_new_rule}") #####
             
             if Improved == True:
                 # add the best rule to the rule set
