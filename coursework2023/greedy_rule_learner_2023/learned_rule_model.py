@@ -52,7 +52,7 @@ class LearnedRuleModel:
         Parameters:
         rule: 1D numpy array of length 4
         '''
-        
+        print(f"rule: {rule}")
         rule_feature = rule[FEATURE]
         rule_operator = self.operator_set[rule[OPERATOR]]
         rule_threshold= self.thresholds[rule_feature][rule[THRESHOLD]]
@@ -68,12 +68,16 @@ class LearnedRuleModel:
         '''
         Formats and prints the current reule set
         '''
+
+        print(self.rule_set)
         num_rules = self.rule_set.shape[0]
         if num_rules==0:
             print("\t Empty Model - No rules learned")
         else:
+            print(f"\t Learned Model has {num_rules} rules")
             print("\tThe Learned Model is: ")
             for rule in range (num_rules ):
+                print(self.rule_set[rule])
                 rule_as_string = self.format_rule( self.rule_set[rule])
                 start_string = "\t"
                 if rule>0:

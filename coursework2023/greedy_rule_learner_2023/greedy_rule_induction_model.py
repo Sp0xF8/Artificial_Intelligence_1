@@ -53,10 +53,9 @@ class GreedyRuleInductionModel(LearnedRuleModel):
         # Using a Greedy constructive hill climbing algorithm to find a set of rules
 
         print("Starting Greedy Rule Induction")
-
-        self.rule_set = np.empty(shape=(0,4)) # list of rules
-         
+        
         not_covered = np.copy(train_X) # initially all examples are not covered by any rule
+        not_covered_labels = np.copy(train_y)
 
         self.default_prediction = np.argmax(np.bincount(train_y)) # most common label in the training set
 
@@ -67,6 +66,7 @@ class GreedyRuleInductionModel(LearnedRuleModel):
             Improved = False
             best_new_rule = np.empty(shape=(0,4)) # initialise an empty rule
             covered_by_best = np.empty(shape=(0,4)) # initialise an empty set of examples covered by the best rule
+            labels_covered_by_best = np.empty(shape=(1)) # initialise an empty set of labels covered by the best rule
             print(type(self.operator_set))
             print(self.operator_set)
 
@@ -77,32 +77,37 @@ class GreedyRuleInductionModel(LearnedRuleModel):
             print(self.thresholds)
             #loop to test new rule
             for feature in range(self.num_features):
-                for operator in self.operator_set:
+                for operator in range(len(self.operator_set)):
                     for threshold in train_y:
                         for label in self.labels:
                             print(f"feature {feature} operator {operator} threshold {threshold} label {label}")
                             
                             # create a new rule
-                            new_rule = np.array([feature, operator, threshold, label])
+                            new_rule = np.array([feature, operator, threshold, label], dtype=np.int32)
 
                             print(f"new rule: {new_rule}")
 
-                            covered_by_new_rule = self.Get_Examples_Covered_By(new_rule, not_covered)
+                            covered_by_new_rule = self._get_examples_covered_by(new_rule, not_covered, not_covered_labels)
                             # if the new rule covers more examples than the best rule so far
                             if len(covered_by_new_rule) > len(covered_by_best):
                                 # update the best rule and the examples covered by it
                                 covered_by_best = covered_by_new_rule
+                                labels_covered_by_best = np.full(shape=(len(covered_by_best)), fill_value=label)
                                 best_new_rule = new_rule
                                 Improved = True
+                            print(f"best new rule: {best_new_rule}")
+                            print(f"self.rule_set: {self.rule_set}")
             # if the algorithm has improved the rule set
 
             print(f"best new rule: {best_new_rule}")
             
             if Improved == True:
+                print("Improved")
                 # add the best rule to the rule set
                 self.rule_set = np.vstack((self.rule_set, best_new_rule))
                 # remove the examples covered by the best rule from the set of examples not covered
                 not_covered = np.delete(not_covered, covered_by_best, axis=0)
+                not_covered_labels = np.delete(not_covered_labels, covered_by_best, axis=0)
                 print(f"Rule set: \n {self.rule_set}")
                 print(f"Examples not covered: {len(not_covered)} \n {not_covered}")
                 print(f"Number of rules: {len(self.rule_set)}")
@@ -110,48 +115,48 @@ class GreedyRuleInductionModel(LearnedRuleModel):
         print("Finished Greedy Rule Induction")
 
 
-    def Get_Examples_Covered_By(self, rule:np.ndarray, not_covered:np.ndarray)->np.ndarray:
-        errors = False
-        covered = np.empty(shape=(0,4))
+    # def Get_Examples_Covered_By(self, rule:np.ndarray, not_covered:np.ndarray)->np.ndarray:
+    #     errors = False
+    #     covered = np.empty(shape=(0,4))
 
-        # check that the rule is valid
-        for example in not_covered:
-            if self.Meets_Conditions(example, rule):
-                if example[LABEL] != rule[LABEL]:
-                    errors = True
-                    break
-                else:
-                    covered = np.vstack((covered, example))
+    #     # check that the rule is valid
+    #     for example in not_covered:
+    #         if self.Meets_Conditions(example, rule):
+    #             if example[LABEL] != rule[LABEL]:
+    #                 errors = True
+    #                 break
+    #             else:
+    #                 covered = np.vstack((covered, example))
 
-        if errors:
-            print("Rule is invalid")
-            return np.empty(shape=(0,4))
-        else:
-            return covered
+    #     if errors:
+    #         print("Rule is invalid")
+    #         return np.empty(shape=(0,4))
+    #     else:
+    #         return covered
 
 
-    def Meets_Conditions(self, example:np.ndarray, rule:np.ndarray)->bool:
-        matches = False
-        feature = rule[FEATURE]
-        operator = rule[OPERATOR]
-        threshold = int(rule[THRESHOLD])
+    # def Meets_Conditions(self, example:np.ndarray, rule:np.ndarray)->bool:
+    #     matches = False
+    #     feature = rule[FEATURE]
+    #     operator = rule[OPERATOR]
+    #     threshold = int(rule[THRESHOLD])
 
-        print(f"example: {example}")
+    #     print(f"example: {example}")
 
-        example_value = example[FEATURE]
-        print(f"example value: {example_value}")
-        print(f"threshold: {threshold}")
-        print(f"operator: {operator}")
+    #     example_value = example[FEATURE]
+    #     print(f"example value: {example_value}")
+    #     print(f"threshold: {threshold}")
+    #     print(f"operator: {operator}")
 
-        if operator == "==":
-            if example_value == threshold:
-                matches = True
-        elif operator == "<":
-            if example_value < threshold:
-                matches = True
-        elif operator == ">":
-            if example_value > threshold:
-                matches = True
+    #     if operator == "==":
+    #         if example_value == threshold:
+    #             matches = True
+    #     elif operator == "<":
+    #         if example_value < threshold:
+    #             matches = True
+    #     elif operator == ">":
+    #         if example_value > threshold:
+    #             matches = True
 
 
 
@@ -161,11 +166,11 @@ class GreedyRuleInductionModel(LearnedRuleModel):
         '''
         Method that overrides the naive code in the superclass
         function GreedyRuleInduction.
-        
+
         Parameters
-         ---------
+            ---------
         example: numpy array of feature values that represent one exanple
-    
+
         Returns: valid label in form of int index into set of values found in the training set
         '''
         prediction=999
@@ -179,10 +184,10 @@ class GreedyRuleInductionModel(LearnedRuleModel):
 
 
         for rule in self.rule_set:
-            if self.Meets_Conditions(example, rule):
+            if self._meets_conditions(example, rule):
                 prediction = rule[LABEL]
                 break
-        
+
         return prediction
     
 
