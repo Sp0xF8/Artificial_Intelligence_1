@@ -50,68 +50,7 @@ class GreedyRuleInductionModel(LearnedRuleModel):
 
         super().fit(train_X,train_y)     
 
-        # Using a Greedy constructive hill climbing algorithm to find a set of rules
-
-        print("Starting Greedy Rule Induction")
         
-        not_covered = np.copy(train_X) # initially all examples are not covered by any rule
-        not_covered_labels = np.copy(train_y)
-
-        self.default_prediction = np.argmax(np.bincount(train_y)) # most common label in the training set
-
-
-        Improved = True # flag to indicate if the algorithm has improved the rule set
-        # loop until all examples are covered or the maximum number of rules is reached
-        while len(not_covered) > 0 and len(self.rule_set) < self.max_rules and Improved:
-            Improved = False
-            best_new_rule = np.empty(shape=(0,4)) # initialise an empty rule
-            covered_by_best = np.empty(shape=(0,4)) # initialise an empty set of examples covered by the best rule
-            labels_covered_by_best = np.empty(shape=(1)) # initialise an empty set of labels covered by the best rule
-            print(type(self.operator_set))
-            print(self.operator_set)
-
-            print(type(self.num_features))
-            print(self.num_features)
-
-            print(type(self.thresholds))
-            print(self.thresholds)
-            #loop to test new rule
-            for feature in range(self.num_features):
-                for operator in range(len(self.operator_set)):
-                    for threshold in train_y:
-                        for label in self.labels:
-                            print(f"feature {feature} operator {operator} threshold {threshold} label {label}")
-                            
-                            # create a new rule
-                            new_rule = np.array([feature, operator, threshold, label], dtype=np.int32)
-
-                            print(f"new rule: {new_rule}")
-
-                            covered_by_new_rule = self._get_examples_covered_by(new_rule, not_covered, not_covered_labels)
-                            # if the new rule covers more examples than the best rule so far
-                            if len(covered_by_new_rule) > len(covered_by_best):
-                                # update the best rule and the examples covered by it
-                                covered_by_best = covered_by_new_rule
-                                labels_covered_by_best = np.full(shape=(len(covered_by_best)), fill_value=label)
-                                best_new_rule = new_rule
-                                Improved = True
-                            print(f"best new rule: {best_new_rule}")
-                            print(f"self.rule_set: {self.rule_set}")
-            # if the algorithm has improved the rule set
-
-            print(f"best new rule: {best_new_rule}")
-            
-            if Improved == True:
-                print("Improved")
-                # add the best rule to the rule set
-                self.rule_set = np.vstack((self.rule_set, best_new_rule))
-                # remove the examples covered by the best rule from the set of examples not covered
-                not_covered = np.delete(not_covered, covered_by_best, axis=0)
-                not_covered_labels = np.delete(not_covered_labels, covered_by_best, axis=0)
-                print(f"Rule set: \n {self.rule_set}")
-                print(f"Examples not covered: {len(not_covered)} \n {not_covered}")
-                print(f"Number of rules: {len(self.rule_set)}")
-
         print("Finished Greedy Rule Induction")
 
 
@@ -173,21 +112,7 @@ class GreedyRuleInductionModel(LearnedRuleModel):
 
         Returns: valid label in form of int index into set of values found in the training set
         '''
-        prediction=999
-
         prediction = self.default_prediction
-
-
-        print("prediction:")
-        print(self.rule_set)
-        print(example)
-
-
-        for rule in self.rule_set:
-            if self._meets_conditions(example, rule):
-                prediction = rule[LABEL]
-                break
-
         return prediction
     
 
