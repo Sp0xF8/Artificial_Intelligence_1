@@ -1,0 +1,4 @@
+<SCORE>100</SCORE>
+<MESSAGE>After removing repeated categories, your bot used 8 categories</MESSAGE>
+<MESSAGE>Your bot answered every question correctly using 8 categories</MESSAGE>
+<MESSAGE>Congratulations, you have beaten Jim's score!</MESSAGE>

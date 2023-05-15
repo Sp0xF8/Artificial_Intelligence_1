@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="1.0.1">
+
+
+    <category>
+        <pattern> WHAT IS * </pattern>
+        <template>
+            <think><set name="star"><star/></set></think>
+            <condition name="star">
+                <li value="a fact"> A fact is a statement which asserts that a relationship holds for an object-subject pair. </li>
+                <li value="a rule"> A rule is a statement that generates new knowledge by asserting that if one fact is true, then another is also true. </li>
+                <li value="long-term knowledge"> Long-term knowledge is valid over a period of time. </li>
+                <li value="the way that AIML allows variables in its long-term knowledge"> AIML has wildcards and srai for that purpose. </li>
+                <li value="the way AIML supports context during a conversation">AIML supports context through the use of the that tag to refer to previous bot answers, and via setting variables such as topic.</li>
+                <li value="short-term knowledge"> Short-term knowledge is only valid for a particular situation or run of a programme. </li>
+                <li value="generic knowledge"> Generic knowledge is relevant to more than one application or domain. </li>
+                <li value="domain-specific knowledge"> Domain-specific knowledge is only applicable to one specific application or domain. </li>
+                <li> I dont know what <star /> is! Sorry! </li>
+            </condition>
+        </template>
+    </category>
+
+
+    <category>
+        <pattern> * AN EXAMPLE OF * </pattern>
+        <template>
+            <think><set name="star"><star index="2" /></set></think>
+            <condition name="star">
+                <li value="long-term generic knowledge"> The formal specification of the python programming language. </li>
+                <li value="long-term domain-specific knowledge"> The formal specification of a particular machine learning algorithm. </li>
+                <li value="short-term generic knowledge"> The date today is an example as it may be useful in different contexts but only lasts 24 hours. </li>
+                <li value="short-term domain-specific knowledge"> The deadline for the submission of this coursework.</li>
+                <li value="a rule"> If isAlive(X) then NOT isDead(X). </li>
+                <li value="a fact"> All coursework for this module is run through automatic and effective plagiarism checks. </li>
+                <li> I dont know what <star index="2" /> is! Sorry! </li>
+            </condition>
+        </template>
+    </category>
+
+
+    <category>
+        <pattern> * DEFINITION OF * </pattern>
+        <template><srai> WHAT IS <star index="2" /></srai></template>
+    </category>
+
+
+    <category>
+        <pattern> TELL ME ABOUT * </pattern>
+        <template><srai> GIVE A DEFINITION OF <star /></srai></template>
+    </category>
+
+
+    <category>
+        <pattern> ILLUSTRATE THE CONCEPT OF * </pattern>
+        <template><srai> GIVE ME AN EXAMPLE OF <star /></srai></template>
+    </category>
+
+    <category>
+        <pattern> * WHAT IS * </pattern>
+        <template><srai> TELL ME ABOUT <star index="2" /></srai></template>
+    </category>
+
+    <category>
+        <pattern> _ MYBOT </pattern>
+        <template><srai><star /></srai></template>
+    </category>
+
+    <category>
+        <pattern> WHY IS KNOWING THAT USEFUL </pattern>
+        <template>
+            <think><set name="star"><that/></set></think>
+            <condition name="star">
+                <li value="All coursework for this module is run through automatic and effective plagiarism checks.">To remind you that we take assessment offences very seriously.</li>
+                <li value="AIML has wildcards and srai for that purpose.">Because it allows us to make statements that apply to classes of things or questions.</li>
+                <li value="AIML supports context through the use of the that tag to refer to previous bot answers, and via setting variables such as topic.">Because some words like that and it can only be understood in the context of previous sentences</li>
+                <li>Because this bot sucks</li>
+            </condition>
+        </template>
+    </category>
+    
+</aiml>

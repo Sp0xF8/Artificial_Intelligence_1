@@ -483,6 +483,7 @@ datafile= 'fruit_values.csv'
 perfect_clusters = np.genfromtxt('fruit_label_ids.csv')
 #call to marking function
 score, message= check_visualisation(student,datafile,3,feature_names,"dummy")
+print(score)
 if(score>0):
     print('This scores >0 so can be submitted. '
           'Of course you might want to  check the jpg file produced '
