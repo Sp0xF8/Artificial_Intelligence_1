@@ -62,6 +62,89 @@ class GreedyRuleInductionModel(LearnedRuleModel):
             ##  HINT 4: you can add a 1D array called 'best_new_rule' to the rule set using
             ##.  self.rule_set= np.row_stack((self.rule_set, best_new_rule)).astype(int)
 
+
+        # print("printing Rule Set: ")
+        # print(self.rule_set)
+        # print(self.rule_set.shape)
+        # print(type(self.rule_set))
+
+        
+
+        # print()
+
+        # print("printing thresholds:")
+        # print(self.thresholds)
+
+        # beta = 0
+        # for group in self.thresholds:
+        #     for threshold in group:
+        #         print()
+        #         print()
+        #         print(f"beta: {beta} | Feature: {train_X[beta]} threshold: {threshold} Label: {train_y[beta]} ")
+        #         print(f"{type(train_X[beta][0])}    {type(threshold)}    {type(train_y[beta])}")
+        #         beta += 1
+        # print()
+        # print()
+
+        # for i in range(len(train_X)):
+
+        #     print(f" ID) {i} | Feature: {train_X[i]} Label: {train_y[i]}")
+        #     print()
+
+
+        # print() #  - Debugging
+        # print()  #  - Debugging
+        # print("------------------Debug------------------") #  - Debugging
+        # print()  #  - Debugging
+
+        # print(self.labels) #  - Debugging
+
+        not_covered = train_X.copy()
+        labels_not_covered = train_y.copy()
+
+        self.default_prediction = np.argmax(np.bincount(train_y))
+
+        # print(f"printing default prediction: {self.default_prediction}")  #  - Debugging
+        # print(f"printing default prediction type: {type(self.default_prediction)}") #  - Debugging
+
+        improved = True
+        while (len(not_covered) > 0 and len(self.rule_set) < self.max_rules and improved == True):
+            improved = False
+            best_new_rule = []
+            best_covered = []
+
+            for i in range(len(not_covered[0])):
+                for j in range(len(self.operator_set)):
+                    jk = 0
+                    for k in self.thresholds[jk]:
+
+                        for l in self.labels:
+                            print(f"feature: {not_covered[i][jk]} | operator: {j} | threshold: {k} | label: {l}")
+                            new_rule = np.array([i, j, k, l])
+                            covered = super()._get_examples_covered_by(new_rule, not_covered, labels_not_covered)
+
+                            if len(covered) > len(best_covered):
+                                best_covered = covered
+                                best_new_rule = new_rule
+                                improved = True
+                    jk += 1
+                
+            
+            if improved == True:    
+
+                print(f"printing best new rule: {best_new_rule}")
+
+
+                not_covered = np.delete(not_covered, best_covered, axis=0)
+                labels_not_covered = np.delete(labels_not_covered, best_covered, axis=0)
+
+                self.rule_set = np.row_stack((self.rule_set, best_new_rule)).astype(int)
+
+                print(f"printing not_covered: \n {not_covered}")
+
+                
+
+        print(self.rule_set)
         
 
         
@@ -78,6 +161,8 @@ class GreedyRuleInductionModel(LearnedRuleModel):
         Returns: valid label in form of int index into set of values found in the training set
         '''
         prediction=999
+
+
         
   
         ###== YOUR CODE HERE====####
@@ -89,6 +174,15 @@ class GreedyRuleInductionModel(LearnedRuleModel):
         ### Hint 2 : You may well want to make use of the supporting method _meets_conditions() 
         ###
         ### Hint 3: make sure your code changes what is held in the variable prediction!
+
+
+        prediction = self.default_prediction
+
+        for rule in self.rule_set:
+            if super()._meets_conditions(example, rule):
+                prediction = rule[LABEL]
+                break
+
         return prediction
     
 
